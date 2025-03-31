@@ -1,16 +1,17 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-export default function UserList({ onSelectUser }) {
+export default function UserList({ onSelectUser, currentUser }) {
   const [users, setUsers] = useState([]);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/user/getallusers",{withCredentials:true})
+      .get("http://localhost:8000/user/getallusers", { withCredentials: true })
       .then((res) => {
-        console.log(res.data)
-        setUsers(res.data)})
+        console.log(res.data);
+        setUsers(res.data);
+      })
       .catch((err) => {
         console.error("Error fetching users:", err);
         setError("Failed to load users. Please try again.");
@@ -30,9 +31,9 @@ export default function UserList({ onSelectUser }) {
           <div
             key={user._id}
             onClick={() => onSelectUser(user)}
-            className="cursor-pointer p-2 rounded transition text-white"
+            className="cursor-pointer p-2 rounded text-white "
           >
-            {user.userName}
+            {currentUser._id === user._id ? "You" : user.userName}
           </div>
         ))
       )}

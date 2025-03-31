@@ -2,9 +2,10 @@ import React, { useEffect, useState } from "react";
 
 import axios from "axios";
 
-import Logout from "./Logout.jsx";
+import Logout from "../authentication/Logout.jsx";
 import UserList from "./UserList.jsx";
 import Chat from "./Chat.jsx";
+import { Link } from "react-router-dom";
 
 function Home() {
   const [selectedUser, setSelectedUser] = useState(null);
@@ -16,6 +17,7 @@ function Home() {
     axios
       .get("http://localhost:8000/user/currentuser", { withCredentials: true })
       .then((res) => {
+        console.log(res.data)
         setCurrentUser(res.data); // Expected to have _id and username
         setLoading(false);
       })
@@ -30,20 +32,26 @@ function Home() {
   }
 
   if (!currentUser) {
-    return <p>Please log in to access the chat.</p>;
+    return <>
+    <p>
+      Please log in to access the chat.
+    </p>
+    <br />
+    <Link to={'/login'} className="text-blue-500 hover:text-green-500" >Re Login please</Link>
+    </>
   }
   return (
     <div className="bg-black">
       <div className="flex gap-8">
         <div className="w-1/3 text-white">
-          <UserList onSelectUser={setSelectedUser} />
+          <UserList onSelectUser={setSelectedUser} currentUser={currentUser} />
           <Logout />
         </div>
         <div className="w-2/3 text-white">
           {selectedUser ? (
-            <Chat selectedUser={selectedUser} currentUser={currentUser} />
+            <Chat selectedUser={selectedUser} currentUser={currentUser} /> // * 
           ) : (
-            <p>people in contact</p>
+            <p>people not in contact</p>
           )}
         </div>
       </div>

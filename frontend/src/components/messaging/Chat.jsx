@@ -1,55 +1,56 @@
 import { useEffect, useState } from "react";
-import {io} from 'socket.io-client'
-const socket = io()
+import { io } from "socket.io-client";
 
 export default function Chat({ selectedUser, currentUser }) {
   const [msg, setMsg] = useState([]); // Chat history
   const [input, setInput] = useState(""); // Message text
+  const [socket, setSocket] = useState(null); // Manage socket instance
 
   useEffect(() => {
-    
-    socket.emit("user-online", currentUser._id);
+    const newSocket = io("http://localhost:8000"); // Ensure backend URL is correct
+    setSocket(newSocket);
 
-    
-    socket.on("receive-message", (message) => {
+    newSocket.emit("user-online", currentUser._id);
+
+    newSocket.on("personal-message", (message) => {
       setMsg((prevMsg) => [...prevMsg, message]);
     });
 
-    // Cleanup function to remove the event listener on unmount
     return () => {
-      socket.off("receive-message");
+      newSocket.disconnect(); // Cleanup on unmount
     };
-  }, [currentUser]);
+  }, [selectedUser]);
 
   const sendMsg = () => {
-    if (!input.trim()) return;
+    if (!input.trim() || !socket) return;
 
     const newMsg = {
       senderId: currentUser._id,
       receiverId: selectedUser._id,
-      msg: input, 
+      msg: input,
     };
 
-   
-    socket.emit("send-message", newMsg);
+    socket.emit("personal-message", newMsg);
 
-    // Optimistically update the UI with the new message
+    // Optimistically update the UI
     setMsg((prevMsg) => [...prevMsg, newMsg]);
-    setInput(""); // Clear the input field
+    setInput(""); // Clear input
   };
 
   return (
     <div className="p-4">
-      <h2 className="text-xl font-semibold mb-4">{selectedUser.username}</h2>
+      <h2 className="text-xl font-semibold mb-4">{selectedUser.userName}</h2>
       <div className="border border-gray-300 p-4 h-72 overflow-y-auto mb-4">
         {msg.map((m, index) => (
           <p
             key={index}
             className={`mb-2 ${
-              m.senderId === currentUser._id ? "text-right text-blue-600" : "text-left text-green-500"
+              m.senderId === currentUser._id
+                ? "text-right text-blue-600"
+                : "text-left text-green-500"
             }`}
           >
-            {m.message}
+            {m.msg} {/* ✅ Fixed this from `m.message` to `m.msg` */}
           </p>
         ))}
       </div>
@@ -71,6 +72,3 @@ export default function Chat({ selectedUser, currentUser }) {
     </div>
   );
 }
-
-
-

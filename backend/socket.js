@@ -19,8 +19,13 @@ export function setUpSocket(server) {
       console.log(`User ${userId} is online.`);
     });
 
-    socket.on("send-message", async ({ senderId, receiverId, msg }) => {
+    socket.on("personal-message", async ({ senderId, receiverId, msg }) => {
       try {
+
+
+        if (!senderId){
+          console.error('Error no senderId :',senderId)
+        }
         const newMessage = await Message.create({
           senderId,
           receiverId,
@@ -29,7 +34,7 @@ export function setUpSocket(server) {
 
         const receiverSocket = onlineUsers.get(receiverId);
         if (receiverSocket) {
-          io.to(receiverSocket).emit("receive-message", newMessage);
+          io.to(receiverSocket).emit("personal-message", newMessage);
         }
         socket.emit("message-saved", newMessage);
         console.log(`Message from ${senderId} saved with id ${newMessage._id}`);
@@ -42,7 +47,7 @@ export function setUpSocket(server) {
     socket.on("disconnect", () => {
       console.log("A user disconnected:", socket.id);
 
-      for (const [userId, socketId] of onlineUsers.entries()) {
+      for (const [userId, socketId] of onlineUsers) {
         if (socketId === socket.id) {
           onlineUsers.delete(userId);
           break;

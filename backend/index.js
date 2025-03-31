@@ -17,7 +17,7 @@ app.on("error", (error) => {
 });
 
 const server = http.createServer(app)
-const io = setUpSocket(server);
+setUpSocket(server);
 
 let port = process.env.PORT || 8000
 

@@ -1,12 +1,11 @@
 import "./App.css";
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "./components/Home.jsx";
-import Signup from "./components/Signup.jsx";
-import Login from "./components/Login.jsx";
-import Logout from "./components/Logout.jsx";
-import ResetPassword from "./components/ResetPassword.jsx";
-import ForgotPass from "./components/ForgotPass.jsx";
+
+import { ForgotPass, Login, Signup, ResetPassword, Logout } from "./components/authentication";
+
+import Home from "./components/messaging/Home.jsx";
+
 
 function App() {
   return (

@@ -303,6 +303,12 @@ const getCurrentUser = async (req, res) => {
   try {
     console.log('on get user:',req.user._id)
     const user = await User.findById(req.user._id).select("-password");
+    if (!user){
+      console.log('User not found by id in database')
+    }
+    else{
+      console.log("Current User Fetched Successfully: ",user)
+    }
     return res
       .status(200)
       .json(new ApiResponse(200, user, "Current User Fetched Successfully"));
