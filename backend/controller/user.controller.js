@@ -4,9 +4,7 @@ import bcrypt from "bcryptjs";
 import { User } from "../model/user.model.js";
 import { ApiError } from "../utilities/ApiError.js";
 import { ApiResponse } from "../utilities/ApiResponse.js";
-import fs from "fs-extra";
-import { PDFDocument } from "pdf-lib";
-import path from "path";
+
 
 const option = {
   httpOnly: true,
@@ -41,8 +39,8 @@ const registerUser = async (req, res) => {
 
     if (userExist) {
       return res
-        .status(200)
-        .json(new ApiResponse(200, userExist, "User already exists"));
+        .status(400)
+        .json(new ApiResponse(400, userExist, "User already exists"));
     }
 
     const user = await User.create({
@@ -292,7 +290,7 @@ const changePassword = async (req, res) => {
 
 const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find({}, "-password");
+    const users = await User.find({}, "-password -refreshToken -resetPasswordToken -resetPasswordTokenExpires");
     res.status(200).json(users);
   } catch (error) {
     res.status(500).json({ message: "Error fetching users", error });
@@ -302,7 +300,7 @@ const getAllUsers = async (req, res) => {
 const getCurrentUser = async (req, res) => {
   try {
     console.log('on get user:',req.user._id)
-    const user = await User.findById(req.user._id).select("-password");
+    const user = await User.findById(req.user._id).select("-password -refreshToken -resetPasswordToken -resetPasswordTokenExpires");
     if (!user){
       console.log('User not found by id in database')
     }

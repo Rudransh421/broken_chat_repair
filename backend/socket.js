@@ -1,5 +1,7 @@
 import { Server } from "socket.io";
 import { Message } from "./model/message.model.js";
+import { ApiError } from "./utilities/ApiError.js";
+
 
 let onlineUsers = new Map();
 
@@ -25,12 +27,17 @@ export function setUpSocket(server) {
 
         if (!senderId){
           console.error('Error no senderId :',senderId)
+          return;
         }
         const newMessage = await Message.create({
           senderId,
           receiverId,
           msg,
         });
+
+        if(!newMessage){
+          throw new ApiError(500,'unable to create and save newMessage')
+        }
 
         const receiverSocket = onlineUsers.get(receiverId);
         if (receiverSocket) {

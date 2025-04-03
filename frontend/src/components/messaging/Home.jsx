@@ -8,8 +8,8 @@ import Chat from "./Chat.jsx";
 import { Link } from "react-router-dom";
 
 function Home() {
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [currentUser, setCurrentUser] = useState(null);
+  const [selectedUser, setSelectedUser] = useState({});
+  const [currentUser, setCurrentUser] = useState({});
   const [loading, setLoading] = useState(true);
 
   
@@ -44,12 +44,12 @@ function Home() {
     <div className="bg-black">
       <div className="flex gap-8">
         <div className="w-1/3 text-white">
-          <UserList onSelectUser={setSelectedUser} currentUser={currentUser} />
+          <UserList onSelectUser={setSelectedUser} currentUser={currentUser.data} />
           <Logout />
         </div>
         <div className="w-2/3 text-white">
           {selectedUser ? (
-            <Chat selectedUser={selectedUser} currentUser={currentUser} /> // * 
+            <Chat selectedUser={selectedUser} currentUser={currentUser.data} /> // * 
           ) : (
             <p>people not in contact</p>
           )}

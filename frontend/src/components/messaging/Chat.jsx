@@ -6,11 +6,24 @@ export default function Chat({ selectedUser, currentUser }) {
   const [input, setInput] = useState(""); // Message text
   const [socket, setSocket] = useState(null); // Manage socket instance
 
+  console.log(`selected user :${selectedUser}`)
+
+  if (!selectedUser) {
+    console.log(` No selected user :${selectedUser}`)
+    return;
+  }
   useEffect(() => {
+    
     const newSocket = io("http://localhost:8000"); // Ensure backend URL is correct
     setSocket(newSocket);
 
-    newSocket.emit("user-online", currentUser._id);
+    if (currentUser._id) { 
+      newSocket.emit("user-online", currentUser._id);
+    }
+    else{
+      console.error('No currentId: ',currentUser)
+      return
+    }
 
     newSocket.on("personal-message", (message) => {
       setMsg((prevMsg) => [...prevMsg, message]);
@@ -19,10 +32,17 @@ export default function Chat({ selectedUser, currentUser }) {
     return () => {
       newSocket.disconnect(); // Cleanup on unmount
     };
-  }, [selectedUser]);
+  }, [currentUser]);
 
   const sendMsg = () => {
     if (!input.trim() || !socket) return;
+
+    if (!currentUser) {
+      throw new Error("No currentUser");
+    }
+    if (!selectedUser) {
+      throw new Error("No selected user");
+    }
 
     const newMsg = {
       senderId: currentUser._id,
@@ -42,15 +62,8 @@ export default function Chat({ selectedUser, currentUser }) {
       <h2 className="text-xl font-semibold mb-4">{selectedUser.userName}</h2>
       <div className="border border-gray-300 p-4 h-72 overflow-y-auto mb-4">
         {msg.map((m, index) => (
-          <p
-            key={index}
-            className={`mb-2 ${
-              m.senderId === currentUser._id
-                ? "text-right text-blue-600"
-                : "text-left text-green-500"
-            }`}
-          >
-            {m.msg} {/* ✅ Fixed this from `m.message` to `m.msg` */}
+          <p key={index} className={`mb-2 ${m.senderId === currentUser._id ? "text-right text-blue-600" : "text-left text-green-500"}`}>
+            {m.msg} {/* ✅ Fixed from `m.message` to `m.msg` */}
           </p>
         ))}
       </div>
