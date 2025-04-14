@@ -5,7 +5,6 @@ import { User } from "../model/user.model.js";
 import { ApiError } from "../utilities/ApiError.js";
 import { ApiResponse } from "../utilities/ApiResponse.js";
 
-
 const option = {
   httpOnly: true,
   secure: false,
@@ -129,7 +128,7 @@ const logoutUser = async (req, res) => {
 
 const sendPasswordResetLink = async (req, res) => {
   try {
-    console.log("🔹 Received request for password reset");
+    console.log("Received request for password reset");
 
     // Step 1: Check if email is present in the request body
     const { email } = req.body;
@@ -219,7 +218,7 @@ const resetPassword = async (req, res) => {
       resetPasswordToken: resetToken,
     });
 
-    console.log(user)
+    console.log(user);
     if (!user) {
       return res.status(400).json({ error: "Invalid or expired token" });
     }
@@ -290,7 +289,10 @@ const changePassword = async (req, res) => {
 
 const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find({}, "-password -refreshToken -resetPasswordToken -resetPasswordTokenExpires");
+    const users = await User.find(
+      {},
+      "-password -refreshToken -resetPasswordToken -resetPasswordTokenExpires"
+    );
     res.status(200).json(users);
   } catch (error) {
     res.status(500).json({ message: "Error fetching users", error });
@@ -299,20 +301,21 @@ const getAllUsers = async (req, res) => {
 
 const getCurrentUser = async (req, res) => {
   try {
-    console.log('on get user:',req.user._id)
-    const user = await User.findById(req.user._id).select("-password -refreshToken -resetPasswordToken -resetPasswordTokenExpires");
-    if (!user){
-      console.log('User not found by id in database')
-    }
-    else{
-      console.log("Current User Fetched Successfully: ",user)
+    console.log("on get user:", req.user._id);
+    const user = await User.findById(req.user._id).select(
+      "-password -refreshToken -resetPasswordToken -resetPasswordTokenExpires"
+    );
+    if (!user) {
+      console.log("User not found by id in database");
+    } else {
+      console.log("Current User Fetched Successfully: ", user);
     }
     return res
       .status(200)
       .json(new ApiResponse(200, user, "Current User Fetched Successfully"));
   } catch (error) {
     res.status(500).json({ message: "Error fetching current user" });
-    console.log(error)
+    console.log(error);
   }
 };
 

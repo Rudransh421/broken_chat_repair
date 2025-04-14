@@ -2,7 +2,6 @@ import { Server } from "socket.io";
 import { Message } from "./model/message.model.js";
 import { ApiError } from "./utilities/ApiError.js";
 
-
 let onlineUsers = new Map();
 
 export function setUpSocket(server) {
@@ -23,20 +22,19 @@ export function setUpSocket(server) {
 
     socket.on("personal-message", async ({ senderId, receiverId, msg }) => {
       try {
-
-
-        if (!senderId){
-          console.error('Error no senderId :',senderId)
+        if (!senderId) {
+          console.error("Error no senderId :", senderId);
           return;
         }
         const newMessage = await Message.create({
           senderId,
           receiverId,
           msg,
+          type: "text",
         });
 
-        if(!newMessage){
-          throw new ApiError(500,'unable to create and save newMessage')
+        if (!newMessage) {
+          throw new ApiError(500, "unable to create and save newMessage");
         }
 
         const receiverSocket = onlineUsers.get(receiverId);

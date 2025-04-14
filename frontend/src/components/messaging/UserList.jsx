@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import conf from "../../config/conf.js";
 
 export default function UserList({ onSelectUser, currentUser }) {
   const [users, setUsers] = useState([]);
@@ -7,7 +8,7 @@ export default function UserList({ onSelectUser, currentUser }) {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/user/getallusers", { withCredentials: true })
+      .get(`${conf.backendUrl}/user/getallusers`, { withCredentials: true })
       .then((res) => {
         console.log(res.data);
         setUsers(res.data);

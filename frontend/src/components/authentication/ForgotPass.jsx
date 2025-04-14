@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { useState } from "react";
+import conf from "../../config/conf.js";
 
 function ForgotPass() {
   const [email, setEmail] = useState("");
@@ -8,7 +9,7 @@ function ForgotPass() {
     e.preventDefault();
     try {
       const res = await axios.post(
-        "http://localhost:8000/user/forgot-password",
+        `${conf.backendUrl}/user/forgot-password`,
         { email }
       );
       console.log(res.data.message);

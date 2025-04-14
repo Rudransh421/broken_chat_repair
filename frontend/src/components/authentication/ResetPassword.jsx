@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom';
+import conf from '../../config/conf.js';
 
 const ResetPassword = () => {
     const { resetToken } = useParams(); // Ensure it matches backend param name
@@ -11,11 +12,11 @@ const ResetPassword = () => {
       e.preventDefault();
       try {
         const response = await axios.post(
-          `http://localhost:8000/user/reset-password/${resetToken}`, // Send token in URL
+         `${conf.backendUrl}/user/reset-password/${resetToken}`, // Send token in URL
           { newPassword } // Send only newPassword in body
         );
   
-        console.log("✅ Password reset successful:", response.data.message);
+        console.log("Password reset successful:", response.data.message);
         alert("Password reset successful! You can now log in.");
         navigate("/login");
       } catch (error) {

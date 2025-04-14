@@ -1,32 +1,34 @@
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
+import conf from "../../config/conf.js";
+import ChatBox from "./ChatBox.jsx";
+import { useSelector, useDispatch } from "react-redux";
+import { addMessages } from "../../features/chat/chatSlice.js";
 
 export default function Chat({ selectedUser, currentUser }) {
-  const [msg, setMsg] = useState([]); // Chat history
   const [input, setInput] = useState(""); // Message text
   const [socket, setSocket] = useState(null); // Manage socket instance
+  const dispatch = useDispatch();
 
-  console.log(`selected user :${selectedUser}`)
+  console.log(`selected user :${selectedUser}`);
 
   if (!selectedUser) {
-    console.log(` No selected user :${selectedUser}`)
+    console.log(` No selected user :${selectedUser}`);
     return;
   }
   useEffect(() => {
-    
-    const newSocket = io("http://localhost:8000"); // Ensure backend URL is correct
+    const newSocket = io(conf.backendUrl); // Ensure backend URL is correct
     setSocket(newSocket);
 
-    if (currentUser._id) { 
+    if (currentUser._id) {
       newSocket.emit("user-online", currentUser._id);
-    }
-    else{
-      console.error('No currentId: ',currentUser)
-      return
+    } else {
+      console.error("No currentId: ", currentUser);
+      return;
     }
 
     newSocket.on("personal-message", (message) => {
-      setMsg((prevMsg) => [...prevMsg, message]);
+      dispatch(addMessages(message));
     });
 
     return () => {
@@ -53,20 +55,18 @@ export default function Chat({ selectedUser, currentUser }) {
     socket.emit("personal-message", newMsg);
 
     // Optimistically update the UI
-    setMsg((prevMsg) => [...prevMsg, newMsg]);
     setInput(""); // Clear input
   };
 
   return (
     <div className="p-4">
       <h2 className="text-xl font-semibold mb-4">{selectedUser.userName}</h2>
-      <div className="border border-gray-300 p-4 h-72 overflow-y-auto mb-4">
-        {msg.map((m, index) => (
-          <p key={index} className={`mb-2 ${m.senderId === currentUser._id ? "text-right text-blue-600" : "text-left text-green-500"}`}>
-            {m.msg} {/* ✅ Fixed from `m.message` to `m.msg` */}
-          </p>
-        ))}
-      </div>
+
+      <ChatBox
+        currentUser={currentUser}
+        selectedUser={selectedUser}
+      />
+
       <div className="flex">
         <input
           type="text"

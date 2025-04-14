@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import conf from "../../config/conf.js";
 
 const Logout = () => {
   const navigate = useNavigate();
@@ -7,7 +8,7 @@ const Logout = () => {
   const handleLogout = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:8000/user/logout",
+        `${conf.backendUrl}/user/logout`,
         {},
         {
           withCredentials: true,

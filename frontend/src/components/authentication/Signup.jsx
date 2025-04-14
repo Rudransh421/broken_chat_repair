@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
+import conf from "../../config/conf.js";
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -22,7 +23,7 @@ const Signup = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8000/user/signup",
+        `${conf.backendUrl}/user/signup`,
         formData,
         { withCredentials: true }
       );
